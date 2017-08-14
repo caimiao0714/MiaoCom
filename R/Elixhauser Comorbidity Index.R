@@ -1,41 +1,25 @@
-# Hello, world!
-#
-# This is an example function named 'hello'
-# which prints 'Hello, world!'.
-#
-# You can learn more about package authoring with RStudio at:
-#
-#   http://r-pkgs.had.co.nz/
-#
-# Some useful keyboard shortcuts for package authoring:
-#
-#   Build and Reload Package:  'Ctrl + Shift + B'
-#   Check Package:             'Ctrl + Shift + E'
-#   Test Package:              'Ctrl + Shift + T'
-
 
 #' To calculate the Charlson Comorbidity index(1985 orginal version and the 2011 Quan version)
-#' @author Miao Cai <email: miaocai@slu.edu>
-#' @description This file aims to calculate the Charlson Comorbidity index(1985 orginal version and the 2011 Quan version)
-#' @param data_file Your data file in which Charlson Comorbidity index is to be calculated
-#' @param x A vector of all comorbidity variables
+#' @author Miao Cai <email: miao.cai@slu.edu>
+#' @description This file aims to calculate the Elixhauser Comorbidity Index
+#' @param data Your data file in which Elixhauser Comorbidity Index is to be calculated
+#' @param comorbidity A vector of all comorbidity variables
 #' @param age The name of the age variable
-#' @return cci_1987: The Charlson Comorbidity index, developed by Mary E. Charlson in 1987
-#' @return cci_2011: The Charlson Comorbidity index, updated by Hude Quan in 2011
+#' @return Elix_Index: The Elixhauser Comorbidity Index, developed by Anne Elixhauser in 1998
 #' @export
 
-cci <- function(data_file, x, age) {
+eci <- function(data, comorbidity, age) {
   start.time <- Sys.time()
 
-### PART A: SUBSETTING DATA---------------------------
+  ### PART A: SUBSETTING DATA---------------------------
   suppressMessages(library(dplyr))
-  data_comorbidity <- subset(data_file, select = x)# subset the whole dataset into "data_comorbidity": subset data that only contains comorbidities
+  data_comorbidity <- subset(data_file, select = comorbidity)# subset the whole dataset into "data_comorbidity": subset data that only contains comorbidities
   data_comorbidity %>% mutate_if(is.factor, as.character) -> data_comorbidity # this converts factor values into characters
   data_comorbidity[is.na(data_comorbidity)] <- 0 #imputate missing values with zeros
   dim_comorbidity <- dim(data_comorbidity)# save the dimensionality of comorbidity subset data
   unlisted_data <- unlist(data_comorbidity)# unlist the comorbidity subset data(converts the data into a vector. Vectorization speeds up the functions)
 
-### PART B: FILTERING COMORBIDITIES---------------------------
+  ### PART B: FILTERING COMORBIDITIES---------------------------
   ##1:MI, Myocardial Infarction
   bidata_com <- (substr(unlisted_data,1,5) == "I25.2") | (substr(unlisted_data, 1, 4) %in% c("I21.","I22.")) # regular expression to find out cases with "Myocardial Infarction" comorbidity ICD-10 codes
   dim(bidata_com) <- dim_comorbidity # convert the comorbidity data vector back into data.frame
@@ -138,7 +122,7 @@ cci <- function(data_file, x, age) {
   data_file$AIDS <- rowSums(bidata_com)
   data_file$AIDS[data_file$AIDS >= 1] <- 1
 
-###PART C---AGE---------------------------
+  ###PART C---AGE---------------------------
   # About age: There are a variety of calculating weights for patient ages. In the orginal 1987 paper, it wrote
   # "Using this approach, a patient 40 yr of age would be assumed to have no risk of comorbid death attributable to age and a patient with a comorbidity index score of 0 would have no risk attributable to pre-existing comorbid disease. Each decade of  age over 40 would add 1 point to risk (i.e. 50 yr, 1; 60 yr, 2; 70 yr 3; etc.) and the "age points" would be added to the score from the  comorbidity index (i.e. 0, 1, 2, 3, etc.)."
   # Therefore, we use this approach for my algorithm
@@ -148,7 +132,7 @@ cci <- function(data_file, x, age) {
   data_file$age_group[data_file$age <= 79 & data_file$age >= 70] <- 3
   data_file$age_group[data_file$age >= 80] <- 4
 
-###PART D---WEIGHTED SUM---------------------------
+  ###PART D---WEIGHTED SUM---------------------------
   #1:CCI_1987, by Mary E. Charlson in 1987
   # Reference: Charlson, M. E., Pompei, P., Ales, K. L., & MacKenzie, C. R. (1987). A new method of classifying prognostic comorbidity in longitudinal studies: development and validation. Journal of chronic diseases, 40(5), 373-383.
 
@@ -171,4 +155,4 @@ cci <- function(data_file, x, age) {
   end.time <- Sys.time()
 
   return(data_file)
-  }
+}
