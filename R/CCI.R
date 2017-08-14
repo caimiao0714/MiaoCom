@@ -27,7 +27,7 @@
 cci <- function(data_file, x, age) {
   start.time <- Sys.time()
 
-  ### PART A: SUBSETTING DATA
+### PART A: SUBSETTING DATA---------------------------
   suppressMessages(library(dplyr))
   data_comorbidity <- subset(data_file, select = x)# subset the whole dataset into "data_comorbidity": subset data that only contains comorbidities
   data_comorbidity %>% mutate_if(is.factor, as.character) -> data_comorbidity # this converts factor values into characters
@@ -35,7 +35,7 @@ cci <- function(data_file, x, age) {
   dim_comorbidity <- dim(data_comorbidity)# save the dimensionality of comorbidity subset data
   unlisted_data <- unlist(data_comorbidity)# unlist the comorbidity subset data(converts the data into a vector. Vectorization speeds up the functions)
 
-### PART B: FILTERING COMORBIDITIES
+### PART B: FILTERING COMORBIDITIES---------------------------
   ##1:MI, Myocardial Infarction
   bidata_com <- (substr(unlisted_data,1,5) == "I25.2") | (substr(unlisted_data, 1, 4) %in% c("I21.","I22.")) # regular expression to find out cases with "Myocardial Infarction" comorbidity ICD-10 codes
   dim(bidata_com) <- dim_comorbidity # convert the comorbidity data vector back into data.frame
@@ -138,7 +138,7 @@ cci <- function(data_file, x, age) {
   data_file$AIDS <- rowSums(bidata_com)
   data_file$AIDS[data_file$AIDS >= 1] <- 1
 
-  ###PART C---AGE
+###PART C---AGE---------------------------
   # About age: There are a variety of calculating weights for patient ages. In the orginal 1987 paper, it wrote
   # "Using this approach, a patient 40 yr of age would be assumed to have no risk of comorbid death attributable to age and a patient with a comorbidity index score of 0 would have no risk attributable to pre-existing comorbid disease. Each decade of  age over 40 would add 1 point to risk (i.e. 50 yr, 1; 60 yr, 2; 70 yr 3; etc.) and the "age points" would be added to the score from the  comorbidity index (i.e. 0, 1, 2, 3, etc.)."
   # Therefore, we use this approach for my algorithm
@@ -148,7 +148,7 @@ cci <- function(data_file, x, age) {
   data_file$age_group[data_file$age <= 79 & data_file$age >= 70] <- 3
   data_file$age_group[data_file$age >= 80] <- 4
 
-  ###PART D--WEIGHTED SUM
+###PART D---WEIGHTED SUM---------------------------
   #1:CCI_1987, by Mary E. Charlson in 1987
   # Reference: Charlson, M. E., Pompei, P., Ales, K. L., & MacKenzie, C. R. (1987). A new method of classifying prognostic comorbidity in longitudinal studies: development and validation. Journal of chronic diseases, 40(5), 373-383.
 
@@ -170,6 +170,5 @@ cci <- function(data_file, x, age) {
 
   end.time <- Sys.time()
 
-  print("Total time cost of this function is: ")
-  return(print(end.time - start.time))
+  return(data_file)
   }
