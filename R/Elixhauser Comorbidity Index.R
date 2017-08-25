@@ -3,8 +3,7 @@
 #' @description This file aims to calculate the Elixhauser Comorbidity Index
 #' @param data Your data file in which Elixhauser Comorbidity Index is to be calculated
 #' @param comorbidity A vector of all comorbidity variables
-#' @param age The name of the age variable
-#' @return Elix_Index: The Elixhauser Comorbidity Index, developed by Anne Elixhauser in 1998
+#' @return data_file: a new data.frame named "data_file". This data frame contains a new variable "Elix_Index": The Elixhauser Comorbidity Index, developed by Anne Elixhauser in 1998
 #' @export
 
 # In reference to:
@@ -207,7 +206,6 @@ eci <- function(data, comorbidity) {
   data_file$Depression_Elix <- rowSums(bidata_com)
   data_file$Depression_Elix[data_file$Depression_Elix >= 1] <- 1
   
-
   # About age: age is not included in calculating the Elixhauser Comorbidity Index.
 
 ###PART D---WEIGHTED SUM---------------------------

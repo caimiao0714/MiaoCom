@@ -4,13 +4,12 @@
 #' @param data Your data file in which Charlson Comorbidity index is to be calculated
 #' @param comorbidity A vector of all comorbidity variables
 #' @param age The name of the age variable
-#' @return cci_1987: The Charlson Comorbidity index, developed by Mary E. Charlson in 1987
-#' @return cci_2011: The Charlson Comorbidity index, updated by Hude Quan in 2011
+#' @return data_file: a new data.frame named "data_file". This data frame contains two new variables: "cci_1987" & "cci_2011"
+#' "cci_1987": The Charlson Comorbidity index, developed by Mary E. Charlson in 1987.
+#' "cci_2011": The Charlson Comorbidity index, updated by Hude Quan in 2011.
 #' @export
 
 cci <- function(data, comorbidity, age) {
-  start.time <- Sys.time()
-  
   ### PART A: SUBSETTING DATA---------------------------
   suppressMessages(library(dplyr))
   data_comorbidity <- subset(data_file, select = comorbidity)# subset the whole dataset into "data_comorbidity": subset data that only contains comorbidities
@@ -151,8 +150,6 @@ cci <- function(data, comorbidity, age) {
   
   # All previous ICD-10 coding algorithms were refered to:
   # Quan, H., Sundararajan, V., Halfon, P., Fong, A., Burnand, B., Luthi, J. C., ... & Ghali, W. A. (2005). Coding algorithms for defining comorbidities in ICD-9-CM and ICD-10 administrative data. Medical care, 1130-1139.
-  
-  end.time <- Sys.time()
-  
+
   return(data_file)
 }
