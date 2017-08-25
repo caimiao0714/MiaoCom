@@ -14,6 +14,7 @@ A R package for calculating comorbidity indexes (i.e. [Charlson Comorbidity Inde
 ## Overview of the functions
     library(MiaoCom)
 
+
 *  `cci()` is a function that calculates [Charlson Comorbidity Index](https://en.wikipedia.org/wiki/Comorbidity#Charlson_index) for patients. The ICD-10 coding algorithms for defining comorbidities refers to [Hude Quan's paper](http://www.jstor.org/stable/3768193?seq=1#page_scan_tab_contents) in 2005. This function returns two Charlson Comorbidity Indexes:
     1. [the 1987 version](http://www.sciencedirect.com/science/article/pii/0021968187901718) developed by Mary E. Charlson; 
     2. [the 2011 updated version](https://academic.oup.com/aje/article/173/6/676/182985/Updating-and-Validating-the-Charlson-Comorbidity) by Hude Quan. 

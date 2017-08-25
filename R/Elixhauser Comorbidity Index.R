@@ -1,5 +1,4 @@
-
-#' To calculate the Charlson Comorbidity index(1985 orginal version and the 2011 Quan version)
+#' To calculate the Elixhauser Comorbidity Index
 #' @author Miao Cai <email: miao.cai@slu.edu>
 #' @description This file aims to calculate the Elixhauser Comorbidity Index
 #' @param data Your data file in which Elixhauser Comorbidity Index is to be calculated
@@ -8,10 +7,12 @@
 #' @return Elix_Index: The Elixhauser Comorbidity Index, developed by Anne Elixhauser in 1998
 #' @export
 
-eci <- function(data, comorbidity, age) {
-  start.time <- Sys.time()
+# In reference to:
+# Elixhauser, A., Steiner, C., Harris, D. R., & Coffey, R. M. (1998). Comorbidity measures for use with administrative data. Medical care, 36(1), 8-27.
 
-  ### PART A: SUBSETTING DATA---------------------------
+eci <- function(data, comorbidity) {
+
+### PART A: SUBSETTING DATA---------------------------
   suppressMessages(library(dplyr))
   data_comorbidity <- subset(data_file, select = comorbidity)# subset the whole dataset into "data_comorbidity": subset data that only contains comorbidities
   data_comorbidity %>% mutate_if(is.factor, as.character) -> data_comorbidity # this converts factor values into characters
@@ -19,140 +20,204 @@ eci <- function(data, comorbidity, age) {
   dim_comorbidity <- dim(data_comorbidity)# save the dimensionality of comorbidity subset data
   unlisted_data <- unlist(data_comorbidity)# unlist the comorbidity subset data(converts the data into a vector. Vectorization speeds up the functions)
 
-  ### PART B: FILTERING COMORBIDITIES---------------------------
-  ##1:MI, Myocardial Infarction
-  bidata_com <- (substr(unlisted_data,1,5) == "I25.2") | (substr(unlisted_data, 1, 4) %in% c("I21.","I22.")) # regular expression to find out cases with "Myocardial Infarction" comorbidity ICD-10 codes
+### PART B: FILTERING COMORBIDITIES---------------------------
+  ##1:CHF_Elix, Congestive heart failure
+  bidata_com <- (substr(unlisted_data,1,5) == c("I09.9", "I11.0", "I13.0", "I13.2", "I25.5", "I42.0", "I42.5", "I42.6", "I42.7", "I42.8", "I42.9", "P29.0")) | (substr(unlisted_data, 1, 3) %in% c("I43", "I50")) # regular expression to find out cases with "Congestive heart failure" comorbidity ICD-10 codes
   dim(bidata_com) <- dim_comorbidity # convert the comorbidity data vector back into data.frame
-  data_file$MI <- rowSums(bidata_com)
-  data_file$MI[data_file$MI >= 1] <- 1
-
-  #2:CCF, Congestive Cardiac Failure
-  bidata_com <- (substr(unlisted_data,1,5) %in% c("I09.9", "I11.0", "I13.0", "I13.2", "I25.5", "I42.0", "I42.5", "I42.6", "I42.7", "I42.8", "I42.9", "P29.0")) | (substr(unlisted_data, 1, 4) %in% c("I50.","I43.")) # regular expression to find out cases with "Congestive Cardiac Failure" comorbidity ICD-10 codes
+  data_file$CHF_ELIX <- rowSums(bidata_com)
+  data_file$CHF_ELIX[data_file$CHF_ELIX >= 1] <- 1
+  
+  #2: CA_Elix, Cardiac arrhythmias
+  bidata_com <- (substr(unlisted_data,1,5) %in% c("I44.1", "I44.2", "I44.3", "I45.6", "I45.9", "R00.0", "R00.1", "R00.8", "T82.1", "Z45.0", "Z95.0")) | (substr(unlisted_data, 1, 3) %in% c("I47", "I48", "I49")) # regular expression to find out cases with "Cardiac arrhythmias" comorbidity ICD-10 codes
   dim(bidata_com) <- dim_comorbidity # convert the comorbidity data vector back into data.frame
-  data_file$CCF <- rowSums(bidata_com)
-  data_file$CCF[data_file$CCF >= 1] <- 1
+  data_file$CA_ELIX <- rowSums(bidata_com)
+  data_file$CA_ELIX[data_file$CA_ELIX >= 1] <- 1
 
-  #3:PVD, Peripheral Vascular Disease
-  bidata_com <- (substr(unlisted_data,1,5) %in% c("I73.1", "I73.8", "I73.9", "I77.1", "I79.0", "I79.2", "K55.1", "K55.8", "K55.9", "Z95.8", "Z95.9")) | (substr(unlisted_data, 1, 4) %in% c("I70.", "I71.")) # regular expression to find out cases with "Peripheral Vascular Disease" comorbidity ICD-10 codes
+  #3:VD_Elix, Valvular disease
+  bidata_com <- (substr(unlisted_data,1,5) %in% c("A52.0", "I09.1", "I09.8", "Q23.0", "Q23.1", "Q23.2", "Q23.3", "Z95.2", "Z95.3", "Z95.4")) | (substr(unlisted_data, 1, 3) %in% c("I05", "I06", "I07", "I08", "I34", "I35", "I36", "I37", "I38", "I39")) # regular expression to find out cases with "Valvular disease" comorbidity ICD-10 codes
   dim(bidata_com) <- dim_comorbidity # convert the comorbidity data vector back into data.frame
-  data_file$PVD <- rowSums(bidata_com)
-  data_file$PVD[data_file$PVD >= 1] <- 1
-
-  #4:CD, Cerebrovascular Disease
-  bidata_com <- (substr(unlisted_data,1,5) == "H34.0") | (substr(unlisted_data, 1, 4) %in% c("I60.", "I61.", "I62.", "I63.", "I64.", "I65.", "I66.", "I67.", "I68.", "I69")) # regular expression to find out cases with "Cerebrovascular Disease" comorbidity ICD-10 codes
+  data_file$VD_ELIX <- rowSums(bidata_com)
+  data_file$VD_ELIX[data_file$VD_ELIX >= 1] <- 1
+ 
+  #4.PCD_Elix, Pulmonary circulation disorders
+  bidata_com <- (substr(unlisted_data,1,5) %in% c("I28.0", "I28.8", "I28.9")) | (substr(unlisted_data, 1, 3) %in% c("I26", "I27")) # regular expression to find out cases with "Pulmonary circulation disorders" comorbidity ICD-10 codes
   dim(bidata_com) <- dim_comorbidity # convert the comorbidity data vector back into data.frame
-  data_file$CD <- rowSums(bidata_com)
-  data_file$CD[data_file$CD >= 1] <- 1
-
-  #5:Dementia
-  bidata_com <- (substr(unlisted_data,1,5) %in% c("F05.1", "G31.1")) | (substr(unlisted_data, 1, 4) %in% c("F00.", "F01.", "F02.", "F03.", "G30.")) # regular expression to find out cases with "Dementia" comorbidity ICD-10 codes
+  data_file$PCD_Elix <- rowSums(bidata_com)
+  data_file$PCD_Elix[data_file$PCD_Elix >= 1] <- 1
+  
+  #5:PVD_Elix, Peripheral vascular disorders    
+  bidata_com <- (substr(unlisted_data,1,5) %in% c("I73.1", "I73.8", "I73.9", "I77.1", "I79.0", "I79.2", "K55.1", "K55.8", "K55.9", "Z95.8", "Z95.9")) | (substr(unlisted_data, 1, 3) %in% c("I70", "I71")) # regular expression to find out cases with "Valvular disease" comorbidity ICD-10 codes
   dim(bidata_com) <- dim_comorbidity # convert the comorbidity data vector back into data.frame
-  data_file$Dementia <- rowSums(bidata_com)
-  data_file$Dementia[data_file$Dementia >= 1] <- 1
-
-  #6:COPD, chronic obstructive pulmonary disease
-  bidata_com <- (substr(unlisted_data,1,5) %in% c("I27.8", "I27.9", "J68.4", "J70.1", "J70.3")) | (substr(unlisted_data, 1, 4) %in% c("J40.", "J41.", "J42.", "J43.", "J44.", "J45.", "J46.", "J47.", "J60.", "J61.", "J62.", "J63.", "J64.", "J65.", "J66.", "J67.")) # regular expression to find out cases with "COPD" comorbidity ICD-10 codes
+  data_file$PVD_Elix <- rowSums(bidata_com)
+  data_file$PVD_Elix[data_file$PVD_Elix >= 1] <- 1
+  
+  #6: Hypertensionun_Elix, Hypertension, uncomplicated
+  bidata_com <- (substr(unlisted_data, 1, 3) == "I10") # regular expression to find out cases with "Hypertension, uncomplicated" comorbidity ICD-10 codes
   dim(bidata_com) <- dim_comorbidity # convert the comorbidity data vector back into data.frame
-  data_file$COPD <- rowSums(bidata_com)
-  data_file$COPD[data_file$COPD >= 1] <- 1
-
-  #7:RD - Connective tissue disease
-  bidata_com <- (substr(unlisted_data,1,5) %in% c("M31.5", "M35.1", "M35.3", "M36.0")) | (substr(unlisted_data, 1, 4) %in% c("M32.", "M33.", "M34.", "M05.", "M06.")) # regular expression to find out cases with "RD" comorbidity ICD-10 codes
+  data_file$Hypertensionun_Elix <- rowSums(bidata_com)
+  data_file$Hypertensionun_Elix[data_file$Hypertensionun_Elix >= 1] <- 1
+  
+  #7: Hypertension_Elix, Hypertension, complicated
+  bidata_com <- (substr(unlisted_data, 1, 3) %in% c("I11", "I12", "I13", "I15")) # regular expression to find out cases with "Hypertension, complicated" comorbidity ICD-10 codes
   dim(bidata_com) <- dim_comorbidity # convert the comorbidity data vector back into data.frame
-  data_file$RD <- rowSums(bidata_com)
-  data_file$RD[data_file$RD >= 1] <- 1
-
-  #8:PUD, Ulcers
-  bidata_com <- substr(unlisted_data, 1, 4) %in% c("K25.", "K26.", "K27.", "K28.") # regular expression to find out cases with "PUD" comorbidity ICD-10 codes
+  data_file$Hypertension_Elix <- rowSums(bidata_com)
+  data_file$Hypertension_Elix[data_file$Hypertension_Elix >= 1] <- 1
+  
+  #8: Paralysis_Elix
+  bidata_com <- (substr(unlisted_data,1,5) %in% c("G04.1", "G11.4", "G80.1", "G80.2", "G83.9", "G83.0", "G83.1", "G83.2", "G83.3", "G83.4")) | (substr(unlisted_data, 1, 3) %in% c("G81", "G82")) # regular expression to find out cases with "Paralysis" comorbidity ICD-10 codes
   dim(bidata_com) <- dim_comorbidity # convert the comorbidity data vector back into data.frame
-  data_file$PUD <- rowSums(bidata_com)
-  data_file$PUD[data_file$PUD >= 1] <- 1
-
-  #9:MLD, Mild liver disease
-  bidata_com <- (substr(unlisted_data,1,5) %in% c("K70.0", "K70.1", "K70.2", "K70.3", "K70.9", "K71.3", "K71.4", "K71.5", "K71.7", "K76.0", "K76.2", "K76.3", "K76.4", "K76.8", "K76.9", "Z94.4")) | (substr(unlisted_data, 1, 4) %in% c("B18.", "K73.", "K74.")) # regular expression to find out cases with "MLD" comorbidity ICD-10 codes
+  data_file$Paralysis_Elix <- rowSums(bidata_com)
+  data_file$Paralysis_Elix[data_file$Paralysis_Elix >= 1] <- 1
+  
+  #9: OND_Elix, Other neurological disorders
+  bidata_com <- (substr(unlisted_data,1,5) %in% c("G25.4", "G25.5", "G31.2", "G31.8", "G31.9", "G93.1", "G93.4", "R47.0")) | (substr(unlisted_data, 1, 3) %in% c("G10", "G20", "G35", "G41", "G11", "G21", "G36", "R56", "G12", "G22", "G37", "G13", "G32", "G40")) # regular expression to find out cases with "Other neurological disorders" comorbidity ICD-10 codes
   dim(bidata_com) <- dim_comorbidity # convert the comorbidity data vector back into data.frame
-  data_file$MLD <- rowSums(bidata_com)
-  data_file$MLD[data_file$MLD >= 1] <- 1
-
-  #10:DMandEOD (with end-organ damage)
-  bidata_com <- substr(unlisted_data, 1, 5) %in% c("E10.2", "E10.3", "E10.4", "E10.5", "E10.7", "E11.2", "E11.3", "E11.4", "E11.5", "E11.7", "E12.2", "E12.3", "E12.4", "E12.5", "E12.7", "E13.2", "E13.3", "E13.4", "E13.5", "E13.7", "E14.2", "E14.3", "E14.4", "E14.5", "E14.7") # regular expression to find out cases with "DMandEOD (with end-organ damage)" comorbidity ICD-10 codes
+  data_file$OND_Elix <- rowSums(bidata_com)
+  data_file$OND_Elix[data_file$OND_Elix >= 1] <- 1
+  
+  #10: CPD_Elix, Chronic pulmonary disease
+  bidata_com <- (substr(unlisted_data,1,5) %in% c("I27.8", "I27.9", "J68.4", "J70.1", "J70.3")) | (substr(unlisted_data, 1, 3) %in% c("J40", "J60", "J41", "J61", "J42", "J62", "J43", "J63", "J44", "J64", "J45", "J65", "J46", "J66", "J47", "J67")) # regular expression to find out cases with "Chronic pulmonary disease" comorbidity ICD-10 codes
   dim(bidata_com) <- dim_comorbidity # convert the comorbidity data vector back into data.frame
-  data_file$DMandEOD <- rowSums(bidata_com)
-  data_file$DMandEOD[data_file$DMandEOD >= 1] <- 1
-
-  #11:DMnotEOD (without end-organ damage)
-  bidata_com <- substr(unlisted_data, 1, 5) %in% c("E10.0", "E10.1", "E10.6", "E10.8", "E10.9", "E11.0", "E11.1", "E11.6", "E11.8", "E11.9", "E12.0", "E12.1", "E12.6", "E12.8", "E12.9", "E13.0", "E13.1", "E13.6", "E13.8", "E13.9", "E14.0", "E14.1", "E14.6", "E14.8", "E14.9") # regular expression to find out cases with "DMnotEOD (without end-organ damage)" comorbidity ICD-10 codes
+  data_file$CPD_Elix <- rowSums(bidata_com)
+  data_file$CPD_Elix[data_file$CPD_Elix >= 1] <- 1
+  
+  #11:DMun_Elix, Diabetes, uncomplicated
+  bidata_com <- (substr(unlisted_data,1,5) %in% c("E10.0", "E10.1", "E10.9", "E11.0", "E11.1", "E11.9", "E12.0", "E12.1", "E12.9", "E13.0", "E13.1", "E13.9", "E14.0", "E14.1", "E14.9")) # regular expression to find out cases with "Diabetes, uncomplicated" comorbidity ICD-10 codes
   dim(bidata_com) <- dim_comorbidity # convert the comorbidity data vector back into data.frame
-  data_file$DMnotEOD <- rowSums(bidata_com)
-  data_file$DMnotEOD[data_file$DMnotEOD >= 1] <- 1
-
-  #12: Hemiplegia
-  bidata_com <- (substr(unlisted_data,1,5) %in% c("G04.1", "G11.4", "G80.1", "G80.2", "G83.0", "G83.1", "G83.2", "G83.4", "G83.9")) | (substr(unlisted_data, 1, 4) %in% c("G81.", "G82.")) # regular expression to find out cases with "Hemiplegia" comorbidity ICD-10 codes
+  data_file$DMun_Elix <- rowSums(bidata_com)
+  data_file$DMun_Elix[data_file$DMun_Elix >= 1] <- 1
+  
+  #12: DM_Elix, Diabetes, complicated
+  bidata_com <- (substr(unlisted_data,1,5) %in% c("E10.2", "E11.2", "E12.2", "E13.2", "E14.2", "E10.3", "E11.3", "E12.3", "E13.3", "E14.3", "E10.4", "E11.4", "E12.4", "E13.4", "E14.4", "E10.5", "E11.5", "E12.5", "E13.5", "E14.5", "E10.6", "E11.6", "E12.6", "E13.6", "E14.6", "E10.7", "E11.7", "E12.7", "E13.7", "E14.7", "E10.8", "E11.8", "E12.8", "E13.8", "E14.8")) # regular expression to find out cases with "Diabetes, complicated" comorbidity ICD-10 codes
   dim(bidata_com) <- dim_comorbidity # convert the comorbidity data vector back into data.frame
-  data_file$Hemiplegia <- rowSums(bidata_com)
-  data_file$Hemiplegia[data_file$Hemiplegia >= 1] <- 1
-
-  #13:MSCKD, Moderate to Severe Chronic Kidney Disease
-  bidata_com <- (substr(unlisted_data,1,5) %in% c("I12.0", "I13.1", "N03.2", "N03.3", "N03.4", "N03.5", "N03.6", "N03.7", "N05.2", "N05.3", "N05.4", "N05.5", "N05.6", "N05.7", "N25.0", "Z49.0", "Z49.1", "Z49.2", "Z94.0", "Z99.2")) | (substr(unlisted_data, 1, 4) %in% c("N18.", "N19.")) # regular expression to find out cases with "MSCKD" comorbidity ICD-10 codes
+  data_file$DM_Elix <- rowSums(bidata_com)
+  data_file$DM_Elix[data_file$DM_Elix >= 1] <- 1
+  
+  #13: Hypothyroidism_Elix
+  bidata_com <- (substr(unlisted_data,1,5) == "E89.0") | (substr(unlisted_data, 1, 3) %in% c("E00", "E01", "E02", "E03")) # regular expression to find out cases with "Hypothyroidism_Elix" comorbidity ICD-10 codes
   dim(bidata_com) <- dim_comorbidity # convert the comorbidity data vector back into data.frame
-  data_file$MSCKD <- rowSums(bidata_com)
-  data_file$MSCKD[data_file$MSCKD >= 1] <- 1
-
-  #14:Malignancy, Maligant Tumor
-  bidata_com <- substr(unlisted_data, 1, 4) %in% c("C00.", "C01.", "C02.", "C03.", "C04.", "C05.", "C06.", "C07.", "C08.", "C09.", "C10.", "C11.", "C12.", "C13.", "C14.", "C15.", "C16.", "C17.", "C18.", "C19.", "C20.", "C21.", "C22.", "C23.", "C24.", "C25.", "C26.", "C30.", "C31.", "C32.", "C33.", "C34.", "C37.", "C38.", "C39.", "C40.", "C41.", "C43.", "C45.", "C46.", "C47.", "C48.", "C49.", "C50.", "C51.", "C52.", "C53.", "C54.", "C55.", "C56.", "C57.", "C58.", "C60.", "C61.", "C62.", "C63.", "C64.", "C65.", "C66.", "C67.", "C68.", "C69.", "C70.", "C71.", "C72.", "C73.", "C74.", "C75.", "C76.", "C81.", "C82.", "C83.", "C84.", "C85.", "C88.", "C90.", "C91.", "C92.", "C93.", "C94.", "C95.", "C96.", "C97") # regular expression to find out cases with "Maligant Tumor" comorbidity ICD-10 codes
+  data_file$Hypothyroidism_Elix <- rowSums(bidata_com)
+  data_file$Hypothyroidism_Elix[data_file$Hypothyroidism_Elix >= 1] <- 1
+  
+  #14: Renal_Elix, Renal failure
+  bidata_com <- (substr(unlisted_data,1,5) %in% c("I12.0", "I13.1", "N25.0", "Z49.0", "Z49.1", "Z49.2", "Z94.0", "Z99.2")) | (substr(unlisted_data, 1, 3) %in% c("N18", "N19")) # regular expression to find out cases with "Renal failure" comorbidity ICD-10 codes
   dim(bidata_com) <- dim_comorbidity # convert the comorbidity data vector back into data.frame
-  data_file$Malignancy <- rowSums(bidata_com)
-  data_file$Malignancy[data_file$Malignancy >= 1] <- 1
-
-  #15:MSLD, Moderate–severe liver disease
-  bidata_com <- substr(unlisted_data, 1, 5) %in% c("I85.0", "I85.9", "I86.4", "I98.2", "K70.4", "K71.1", "K72.1", "K72.9", "K76.5", "K76.6", "K76.7") # regular expression to find out cases with "Moderate–severe liver disease" comorbidity ICD-10 codes
+  data_file$Renal_Elix <- rowSums(bidata_com)
+  data_file$Renal_Elix[data_file$Renal_Elix >= 1] <- 1
+  
+  #15: LD_Elix, Liver disease 
+  bidata_com <- (substr(unlisted_data,1,5) %in% c("I86.4", "I98.2", "K71.1", "K71.3", "K71.4", "K71.5", "K71.7", "K76.0", "Z94.4", "k76.2", "k76.3", "k76.4", "k76.5", "k76.6", "k76.7", "k76.8", "k76.9")) | (substr(unlisted_data, 1, 3) %in% c("B18", "I85", "K70", "K72", "K73", "K74")) # regular expression to find out cases with "Liver disease" comorbidity ICD-10 codes
   dim(bidata_com) <- dim_comorbidity # convert the comorbidity data vector back into data.frame
-  data_file$MSLD <- rowSums(bidata_com)
-  data_file$MSLD[data_file$MSLD >= 1] <- 1
-
-  #16:MST, Metastatic solid tumour
-  bidata_com <- substr(unlisted_data, 1, 4) %in% c("C77.", "C78.", "C79.", "C80.") # regular expression to find out cases with "Metastatic solid tumour" comorbidity ICD-10 codes
+  data_file$LD_Elix <- rowSums(bidata_com)
+  data_file$LD_Elix[data_file$LD_Elix >= 1] <- 1
+  
+  #16: PUD_Elix, Peptic ulcer disease excluding bleeding
+  bidata_com <- (substr(unlisted_data,1,5) %in% c("K25.7", "K25.9", "K26.7", "K26.9", "K27.7", "K27.9", "K28.7", "K28.9")) # regular expression to find out cases with "Peptic ulcer disease excluding bleeding" comorbidity ICD-10 codes
   dim(bidata_com) <- dim_comorbidity # convert the comorbidity data vector back into data.frame
-  data_file$MST <- rowSums(bidata_com)
-  data_file$MST[data_file$MST >= 1] <- 1
-
-  #17: AIDS
-  bidata_com <- substr(unlisted_data, 1, 4) %in% c("B20.", "B21.", "B22.", "B24.") # regular expression to find out cases with "AIDS" comorbidity ICD-10 codes
+  data_file$PUD_Elix <- rowSums(bidata_com)
+  data_file$PUD_Elix[data_file$PUD_Elix >= 1] <- 1
+  
+  #17: AIDS_Elix,  AIDS/HIV
+  bidata_com <- (substr(unlisted_data, 1, 3) %in% c("B20", "B21", "B22", "B24")) # regular expression to find out cases with "AIDS/HIV" comorbidity ICD-10 codes
   dim(bidata_com) <- dim_comorbidity # convert the comorbidity data vector back into data.frame
-  data_file$AIDS <- rowSums(bidata_com)
-  data_file$AIDS[data_file$AIDS >= 1] <- 1
+  data_file$AIDS_Elix <- rowSums(bidata_com)
+  data_file$AIDS_Elix[data_file$AIDS_Elix >= 1] <- 1
+  
+  #18: Lymphoma_Elix
+  bidata_com <- (substr(unlisted_data,1,5) %in% c("C90.0", "C90.2")) | (substr(unlisted_data, 1, 3) %in% c("C81", "C82", "C83", "C84", "C85", "C88", "C96")) # regular expression to find out cases with "Lymphoma" comorbidity ICD-10 codes
+  dim(bidata_com) <- dim_comorbidity # convert the comorbidity data vector back into data.frame
+  data_file$Lymphoma_Elix <- rowSums(bidata_com)
+  data_file$Lymphoma_Elix[data_file$Lymphoma_Elix >= 1] <- 1
+  
+  #19: Metastatic_Elix, Metastatic cancer
+  bidata_com <- (substr(unlisted_data, 1, 3) %in% c("C77", "C78", "C79", "C80")) # regular expression to find out cases with "Metastatic cancer" comorbidity ICD-10 codes
+  dim(bidata_com) <- dim_comorbidity # convert the comorbidity data vector back into data.frame
+  data_file$Metastatic_Elix <- rowSums(bidata_com)
+  data_file$Metastatic_Elix[data_file$Metastatic_Elix >= 1] <- 1
+  
+  #20: Solid_Elix, Solid tumor without metastasis， 
+  bidata_com <- (substr(unlisted_data, 1, 3) %in% c("C00", "C01", "C02", "C03", "C04", "C05", "C06", "C07", "C08", "C09", "C10", "", "C11", "C12", "C13", "C14", "C15", "C16", "C17", "C18", "C19", "C20", "C21", "C22", "C23", "C24", "C25", "C26", "C30", "C31", "C32", "C33", "C34", "C37", "C38", "C39", "C40", "C41", "C43", "C45", "C46", "C47", "C48", "C49", "C50", "C51", "C52", "C53", "C54", "C55", "C56", "C57", "C58", "C60", "C61", "C62", "C63", "C64", "C65", "C66", "C67", "C68", "C69", "C70", "C71", "C72", "C73", "C74", "C75", "C76", "C97")) # regular expression to find out cases with "Solid_Elix" comorbidity ICD-10 codes
+  dim(bidata_com) <- dim_comorbidity # convert the comorbidity data vector back into data.frame
+  data_file$Solid_Elix <- rowSums(bidata_com)
+  data_file$Solid_Elix[data_file$Solid_Elix >= 1] <- 1
+  
+  #21: Rheumatoid_Elix, Rheumatoid arthritis/collagen vascular diseases 
+  bidata_com <- (substr(unlisted_data,1,5) %in% c("L94.0", "L94.1", "L94.3", "M46.1", "M46.8", "M46.9", "M12.0", "M12.3", "M31.0", "M31.1", "M31.2", "M31.3")) | (substr(unlisted_data, 1, 3) %in% c("M32", "M33", "M34", "M35", "M45", "M05", "M06", "M08", "M30")) # regular expression to find out cases with "Rheumatoid arthritis/collagen vascular diseases" comorbidity ICD-10 codes
+  dim(bidata_com) <- dim_comorbidity # convert the comorbidity data vector back into data.frame
+  data_file$Rheumatoid_Elix <- rowSums(bidata_com)
+  data_file$Rheumatoid_Elix[data_file$Rheumatoid_Elix >= 1] <- 1
+  
+  #22: Coagulopathy_Elix
+  bidata_com <- (substr(unlisted_data,1,5) %in% c("D69.1", "D69.3", "D69.4", "D69.5", "D69.6")) | (substr(unlisted_data, 1, 3) %in% c("D65", "D66", "D67", "D68")) # regular expression to find out cases with "Coagulopathy" comorbidity ICD-10 codes
+  dim(bidata_com) <- dim_comorbidity # convert the comorbidity data vector back into data.frame
+  data_file$Coagulopathy_Elix <- rowSums(bidata_com)
+  data_file$Coagulopathy_Elix[data_file$Coagulopathy_Elix >= 1] <- 1
+  
+  #23: Obesity_Elix
+  bidata_com <- (substr(unlisted_data, 1, 3) == "E66") # regular expression to find out cases with "Obesity" comorbidity ICD-10 codes
+  dim(bidata_com) <- dim_comorbidity # convert the comorbidity data vector back into data.frame
+  data_file$Obesity_Elix <- rowSums(bidata_com)
+  data_file$Obesity_Elix[data_file$Obesity_Elix >= 1] <- 1
+  
+  #24: Weight_Elix, Weight loss
+  bidata_com <- (substr(unlisted_data,1,5) == "R63.4") | (substr(unlisted_data, 1, 3) %in% c("E40", "E41", "E42", "E43", "E44", "E45", "E46", "R64")) # regular expression to find out cases with "Valvular disease" comorbidity ICD-10 codes
+  dim(bidata_com) <- dim_comorbidity # convert the comorbidity data vector back into data.frame
+  data_file$Weight_Elix <- rowSums(bidata_com)
+  data_file$Weight_Elix[data_file$Weight_Elix >= 1] <- 1
+  
+  #25: Fluid_Elix, Fluid and electrolyte disorders
+  bidata_com <- (substr(unlisted_data,1,5) == "E22.2") | (substr(unlisted_data, 1, 3) %in% c("E86", "E87")) # regular expression to find out cases with "Valvular disease" comorbidity ICD-10 codes
+  dim(bidata_com) <- dim_comorbidity # convert the comorbidity data vector back into data.frame
+  data_file$Fluid_Elix <- rowSums(bidata_com)
+  data_file$Fluid_Elix[data_file$Fluid_Elix >= 1] <- 1
+  
+  #26: Blood_Elix, Blood loss anemia
+  bidata_com <- (substr(unlisted_data,1,5) == "D50.0") # regular expression to find out cases with "Valvular disease" comorbidity ICD-10 codes
+  dim(bidata_com) <- dim_comorbidity # convert the comorbidity data vector back into data.frame
+  data_file$Blood_Elix <- rowSums(bidata_com)
+  data_file$Blood_Elix[data_file$Blood_Elix >= 1] <- 1
+  
+  #27: Deficiency_Elix, Deficiency anemia
+  bidata_com <- (substr(unlisted_data,1,5) %in% c("D50.8", "D50.9")) | (substr(unlisted_data, 1, 3) %in% c("D51", "D52", "D53")) # regular expression to find out cases with "Valvular disease" comorbidity ICD-10 codes
+  dim(bidata_com) <- dim_comorbidity # convert the comorbidity data vector back into data.frame
+  data_file$Deficiency_Elix <- rowSums(bidata_com)
+  data_file$Deficiency_Elix[data_file$Deficiency_Elix >= 1] <- 1
+  
+  #28: Alcohol_Elix, Alcohol abuse
+  bidata_com <- (substr(unlisted_data,1,5) %in% c("G62.1", "I42.6", "K29.2", "K70.0", "K70.3", "K70.9", "Z50.2", "Z71.4", "Z72.1")) | (substr(unlisted_data, 1, 3) %in% c("F10", "E52", "T51")) # regular expression to find out cases with "Alcohol abuse" comorbidity ICD-10 codes
+  dim(bidata_com) <- dim_comorbidity # convert the comorbidity data vector back into data.frame
+  data_file$Alcohol_Elix <- rowSums(bidata_com)
+  data_file$Alcohol_Elix[data_file$Alcohol_Elix >= 1] <- 1
+  
+  #29: Drug_Elix, Drug abuse
+  bidata_com <- (substr(unlisted_data,1,5) %in% c("Z71.5", "Z72.2")) | (substr(unlisted_data, 1, 3) %in% c("F11", "F12", "F13", "F14", "F15", "F16", "F18", "F19")) # regular expression to find out cases with "Drug abuse" comorbidity ICD-10 codes
+  dim(bidata_com) <- dim_comorbidity # convert the comorbidity data vector back into data.frame
+  data_file$Drug_Elix <- rowSums(bidata_com)
+  data_file$Drug_Elix[data_file$Drug_Elix >= 1] <- 1
+  
+  #30: Psychoses_Elix
+  bidata_com <- (substr(unlisted_data,1,5) %in% c("F30.2", "F31.2", "F31.5")) | (substr(unlisted_data, 1, 3) %in% c("F20", "F22", "F23", "F24", "F25", "F28", "F29")) # regular expression to find out cases with "Psychoses" comorbidity ICD-10 codes
+  dim(bidata_com) <- dim_comorbidity # convert the comorbidity data vector back into data.frame
+  data_file$Psychoses_Elix <- rowSums(bidata_com)
+  data_file$Psychoses_Elix[data_file$Psychoses_Elix >= 1] <- 1
+  
+  #31: Depression_Elix
+  bidata_com <- (substr(unlisted_data,1,5) %in% c("F20.4", "F31.3", "F31.4", "F31.5", "F34.1", "F41.2", "F43.2")) | (substr(unlisted_data, 1, 3) %in% c("F32", "F33")) # regular expression to find out cases with "Depression" comorbidity ICD-10 codes
+  dim(bidata_com) <- dim_comorbidity # convert the comorbidity data vector back into data.frame
+  data_file$Depression_Elix <- rowSums(bidata_com)
+  data_file$Depression_Elix[data_file$Depression_Elix >= 1] <- 1
+  
 
-  ###PART C---AGE---------------------------
-  # About age: There are a variety of calculating weights for patient ages. In the orginal 1987 paper, it wrote
-  # "Using this approach, a patient 40 yr of age would be assumed to have no risk of comorbid death attributable to age and a patient with a comorbidity index score of 0 would have no risk attributable to pre-existing comorbid disease. Each decade of  age over 40 would add 1 point to risk (i.e. 50 yr, 1; 60 yr, 2; 70 yr 3; etc.) and the "age points" would be added to the score from the  comorbidity index (i.e. 0, 1, 2, 3, etc.)."
-  # Therefore, we use this approach for my algorithm
-  data_file$age_group <- 0
-  data_file$age_group[data_file$age <= 59 & data_file$age >= 50] <- 1
-  data_file$age_group[data_file$age <= 69 & data_file$age >= 60] <- 2
-  data_file$age_group[data_file$age <= 79 & data_file$age >= 70] <- 3
-  data_file$age_group[data_file$age >= 80] <- 4
+  # About age: age is not included in calculating the Elixhauser Comorbidity Index.
 
-  ###PART D---WEIGHTED SUM---------------------------
-  #1:CCI_1987, by Mary E. Charlson in 1987
-  # Reference: Charlson, M. E., Pompei, P., Ales, K. L., & MacKenzie, C. R. (1987). A new method of classifying prognostic comorbidity in longitudinal studies: development and validation. Journal of chronic diseases, 40(5), 373-383.
+###PART D---WEIGHTED SUM---------------------------
+  # Refer to:
+  # Elixhauser, A., Steiner, C., Harris, D. R., & Coffey, R. M. (1998). Comorbidity measures for use with administrative data. Medical care, 36(1), 8-27.
 
-  data_file <- within(data_file, {
-    CCI_1987 <-
-      MI + CCF + PVD + CD + Dementia + COPD + RD + PUD + MLD + DMnotEOD + DMandEOD *
-      2 + Hemiplegia * 2 + MSCKD * 2 + Malignancy * 2 + MSLD * 3 + MST * 6 + AIDS *
-      6 + age_group
-  })
-
-  #2:CCI_2011, weights were updated by Hude Quan et al.
-  #Reference:
-  data_file$CCI_2011 <- data_file$CCF * 2 + data_file$Dementia * 2 + data_file$COPD + data_file$RD + data_file$MLD *
-    2 + data_file$DMandEOD + data_file$Hemiplegia * 2 + data_file$MSCKD + data_file$Malignancy *
-    2 + data_file$MSLD * 4 + data_file$MST * 6 + data_file$AIDS * 4 + data_file$age_group
+  data_file$Elix_Index <- 7 * data_file$CHF_Elix + 5 * data_file$CA_Elix - 1 * data_file$VD_Elix + 4 * data_file$PCD_Elix + 2 * data_file$PVD_Elix + 0 * data_file$Hypertensionun_Elix + 0 * data_file$Hypertension_Elix + 7 * data_file$Paralysis_Elix + 6 * data_file$OND_Elix + 3 * data_file$CPD_Elix + 0 * data_file$DMun_Elix + 0 * data_file$DM_Elix + 0 * data_file$Hypothyroidism_Elix + 5 * data_file$Renal_Elix + 11 * data_file$LD_Elix + 0 * data_file$PUD_Elix + 0 * data_file$AIDS_Elix + 9 * data_file$Lymphoma_Elix + 12 * data_file$Metastatic_Elix + 4 * data_file$Solid_Elix + 0 * data_file$Rheumatoid_Elix + 3 * data_file$Coagulopathy_Elix - 4 * data_file$Obesity_Elix + 6 * data_file$Weight_Elix + 5 * data_file$Fluid_Elix - 2 * data_file$Blood_Elix - 2 * data_file$Deficiency_Elix + 0 * data_file$Alcohol_Elix - 7 * data_file$Drug_Elix + 0 * data_file$Psychoses_Elix - 3 * data_file$Depression_Elix
 
   # All previous ICD-10 coding algorithms were refered to:
   # Quan, H., Sundararajan, V., Halfon, P., Fong, A., Burnand, B., Luthi, J. C., ... & Ghali, W. A. (2005). Coding algorithms for defining comorbidities in ICD-9-CM and ICD-10 administrative data. Medical care, 1130-1139.
 
-  end.time <- Sys.time()
-
   return(data_file)
-}
+  }
