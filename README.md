@@ -66,12 +66,14 @@ The generated `newdata1` data.frame includes multiple new columns. The `CCI_1987
 > Step 3: Apply `eci()` function to the demo data
     
     newdata2 <- eci(data = demo_data, comorbidity = c("comorbidityICD1", "comorbidityICD2", 
-                    "comorbidityICD3", "comorbidityICD4", "comorbidityICD5"), age = patient_age)
+                    "comorbidityICD3", "comorbidityICD4", "comorbidityICD5"))
 The generated `newdata2` data.frame includes multiple new columns. The `CCI_1987` is your desired [Elixhauser Comorbidity Index](https://en.wikipedia.org/wiki/Comorbidity#Elixhauser_comorbidity_measure).
 
 
 > Step 4: Apply `c3()` function to the demo data
     
     newdata3 <- c3(data = demo_data, comorbidity = c("comorbidityICD1", "comorbidityICD2", 
-                    "comorbidityICD3", "comorbidityICD4", "comorbidityICD5"), age = patient_age)
+                    "comorbidityICD3", "comorbidityICD4", "comorbidityICD5"))
 The generated `newdata3` data.frame includes multiple new columns. The `C3` is your desired [C3 Index](https://www.ncbi.nlm.nih.gov/pubmed/24582212). Please note that the C3 index is developed specifically for cancer patients. This is just a demonstration of the `c3()` function.
+
+Note that CCI includes patient age as a variable for calculating the index. However, patient age is not included in calculating Elixhauser Comorbidity Index and C3 Index. 
