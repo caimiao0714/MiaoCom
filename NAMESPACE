@@ -3,4 +3,3 @@
 export(c3)
 export(cci)
 export(eci)
-import(dplyr)
