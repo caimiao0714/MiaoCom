@@ -9,6 +9,7 @@
 #' @param data Your data file in which Charlson Comorbidity index is to be calculated
 #' @param comorbidity A vector of all comorbidity variables
 #' @param age The name of the age variable
+#' @import dplyr
 #' @return data: a new data.frame named "data". This data frame contains two new variables: "cci_1987" & "cci_2011"
 #'
 #' @export

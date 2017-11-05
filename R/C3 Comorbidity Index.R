@@ -8,6 +8,7 @@
 #' @param data Your data file in which Elixhauser Comorbidity Index is to be calculated
 #' @param comorbidity A vector of all comorbidity variables
 #' @return data: a new data.frame named "data". This data frame contains a new variable "c3": the c3 Index was developed by Sarfati et al. in 2014. This is a comorbidity index targeted at cancer patients.
+#' @import dplyr
 #' @export
 c3 <- function(data, comorbidity) {
   ### PART A: SUBSETTING DATA---------------------------
