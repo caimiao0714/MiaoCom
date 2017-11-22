@@ -69,7 +69,7 @@ The generated `newdata1` data.frame includes multiple new columns. The `CCI_1987
     
     newdata2 <- eci(data = demo_data, comorbidity = c("comorbidityICD1", "comorbidityICD2", 
                     "comorbidityICD3", "comorbidityICD4", "comorbidityICD5"))
-The generated `newdata2` data.frame includes multiple new columns. The `CCI_1987` is your desired [Elixhauser Comorbidity Index](https://en.wikipedia.org/wiki/Comorbidity#Elixhauser_comorbidity_measure).
+The generated `newdata2` data.frame includes multiple new columns. The `Elix_Index` is your desired [Elixhauser Comorbidity Index](https://en.wikipedia.org/wiki/Comorbidity#Elixhauser_comorbidity_measure).
 
 
 > Step 4: Apply `c3()` function to the demo data
