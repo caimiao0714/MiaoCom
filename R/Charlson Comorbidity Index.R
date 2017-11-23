@@ -42,7 +42,7 @@ cci <- function(data, comorbidity, age) {
   data$PVD[data$PVD >= 1] <- 1
 
   #4:CD, Cerebrovascular Disease
-  bidata_com <- (substr(unlisted_data,1,5) == "H34.0") | (substr(unlisted_data, 1, 4) %in% c("I60.", "I61.", "I62.", "I63.", "I64.", "I65.", "I66.", "I67.", "I68.", "I69")) # regular expression to find out cases with "Cerebrovascular Disease" comorbidity ICD-10 codes
+  bidata_com <- (substr(unlisted_data,1,5) %in% c("H34.0", "G45.x", "G46.x")) | (substr(unlisted_data, 1, 4) %in% c("I60.", "I61.", "I62.", "I63.", "I64.", "I65.", "I66.", "I67.", "I68.", "I69.")) # regular expression to find out cases with "Cerebrovascular Disease" comorbidity ICD-10 codes
   dim(bidata_com) <- dim_comorbidity # convert the comorbidity data vector back into data.frame
   data$CD <- rowSums(bidata_com)
   data$CD[data$CD >= 1] <- 1
