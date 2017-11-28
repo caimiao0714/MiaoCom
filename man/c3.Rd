@@ -15,11 +15,15 @@ c3(data, comorbidity)
 data: a new data.frame named "data". This data frame contains a new variable "c3": the c3 Index was developed by Sarfati et al. in 2014. This is a comorbidity index targeted at cancer patients.
 }
 \description{
-This file aims to calculate the c3 Comobidity Index
+This file aims to calculate the c3 Comobidity Index.
 }
-\details{
-The c3 index refers to:
+\note{
+This C3 index is used specifically for cancer patients.
+}
+\references{
 Sarfati, D., et al., Cancer-specific administrative data-based comorbidity indices provided valid alternative to Charlson and National Cancer Institute Indices. J Clin Epidemiol, 2014. 67(5): p. 586-95
+
+Sarfati, D., Developing new comorbidity indices for cancer populations using administrative data. 2013, University of Otago: Dunedin. <Dr. Sarfati's doctoral dissertation>
 }
 \author{
 Miao Cai <email: miao.cai@slu.edu>

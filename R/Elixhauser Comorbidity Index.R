@@ -1,11 +1,13 @@
 #' To calculate the Elixhauser Comorbidity Index
 #'
 #' @author Miao Cai <email: miao.cai@slu.edu>
-#' @description This file aims to calculate the Elixhauser Comorbidity Index
+#' @description This file aims to calculate the Elixhauser Comorbidity Index.
+#' @note The Elixhauser Comorbidity Index does not include age as a component of the index.
 #' @param data Your data file in which Elixhauser Comorbidity Index is to be calculated
 #' @param comorbidity A vector of all comorbidity variables
 #' @return data: a new data.frame named "data". This data frame contains a new variable "Elix_Index": The Elixhauser Comorbidity Index, developed by Anne Elixhauser in 1998
 #' @references Elixhauser, A., Steiner, C., Harris, D. R., & Coffey, R. M. (1998). Comorbidity measures for use with administrative data. Medical care, 36(1), 8-27.
+#' @references Quan, H., Sundararajan, V., Halfon, P., Fong, A., Burnand, B., Luthi, J. C., ... & Ghali, W. A. (2005). Coding algorithms for defining comorbidities in ICD-9-CM and ICD-10 administrative data. Medical care, 1130-1139.
 #' @import dplyr
 #' @export
 eci <- function(data, comorbidity) {
