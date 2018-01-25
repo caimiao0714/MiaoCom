@@ -133,10 +133,10 @@ cci <- function(data, comorbidity, age) {
   # "Using this approach, a patient 40 yr of age would be assumed to have no risk of comorbid death attributable to age and a patient with a comorbidity index score of 0 would have no risk attributable to pre-existing comorbid disease. Each decade of  age over 40 would add 1 point to risk (i.e. 50 yr, 1; 60 yr, 2; 70 yr 3; etc.) and the "age points" would be added to the score from the  comorbidity index (i.e. 0, 1, 2, 3, etc.)."
   # Therefore, we use this approach for my algorithm
   data$age_group <- 0
-  data$age_group[data$age <= 59 & data$age >= 50] <- 1
-  data$age_group[data$age <= 69 & data$age >= 60] <- 2
-  data$age_group[data$age <= 79 & data$age >= 70] <- 3
-  data$age_group[data$age >= 80] <- 4
+  data$age_group[data[[age]] <= 59 & data[[age]] >= 50] <- 1
+  data$age_group[data[[age]] <= 69 & data[[age]] >= 60] <- 2
+  data$age_group[data[[age]] <= 79 & data[[age]] >= 70] <- 3
+  data$age_group[data[[age]] >= 80] <- 4
 
   ###PART D---WEIGHTED SUM---------------------------
   #1:CCI_1987, by Mary E. Charlson in 1987
