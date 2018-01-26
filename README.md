@@ -28,8 +28,8 @@ A R package for calculating comorbidity indexes (i.e. [Charlson Comorbidity Inde
 
 ## Usage of functions
     new_data <- cci(data, comorbidity, age)
-    new_data <- eci(data, comorbidity, age)
-    new_data <-  c3(data, comorbidity, age)
+    new_data <- eci(data, comorbidity)
+    new_data <-  c3(data, comorbidity)
 * `data` is a data.frame  or alike objects from which you want to calculate comorbidity indexed from.
 * `comorbidity` is a vector of the variable names of patients' comorbidity ICD-10 codings in the data. For example, `c("comorbidity1", "comorbidity2","comorbidity3","comorbidity4","comorbidity5")`.
 * `age` is the variable name of the age of the patients in your data, the name should **NOT** be surrounded by single or double quotes (i.e. `'`, `"`).
@@ -57,7 +57,7 @@ A R package for calculating comorbidity indexes (i.e. [Charlson Comorbidity Inde
 > Step 2: Apply `cci()` function to the demo data
     
     newdata1 <- cci(data = demo_data, comorbidity = c("comorbidityICD1", "comorbidityICD2", 
-                    "comorbidityICD3", "comorbidityICD4", "comorbidityICD5"), age = patient_age)
+                    "comorbidityICD3", "comorbidityICD4", "comorbidityICD5"), age = "patient_age")
 
 The generated `newdata1` data.frame includes multiple new columns. The `CCI_1987` and `CCI_2011` columns deserve your special attention.
 
