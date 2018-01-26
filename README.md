@@ -32,7 +32,7 @@ A R package for calculating comorbidity indexes (i.e. [Charlson Comorbidity Inde
     new_data <-  c3(data, comorbidity)
 * `data` is a data.frame  or alike objects from which you want to calculate comorbidity indexed from.
 * `comorbidity` is a vector of the variable names of patients' comorbidity ICD-10 codings in the data. For example, `c("comorbidity1", "comorbidity2","comorbidity3","comorbidity4","comorbidity5")`.
-* `age` is the variable name of the age of the patients in your data, the name should **NOT** be surrounded by single or double quotes (i.e. `'`, `"`).
+* `age` is the variable name of the age of the patients in your data, the name **should** be surrounded by single or double quotes (i.e. `'`, `"`).
 
 
 
