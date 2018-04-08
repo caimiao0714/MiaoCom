@@ -7,6 +7,7 @@
 #' @param comorbidity A vector of all comorbidity variables
 #' @return data: a new data.frame named "data". This data frame contains a new variable "Elix_Index": The Elixhauser Comorbidity Index, developed by Anne Elixhauser in 1998
 #' @references Elixhauser, A., Steiner, C., Harris, D. R., & Coffey, R. M. (1998). Comorbidity measures for use with administrative data. Medical care, 36(1), 8-27.
+#' @references van Walraven, C., Austin, P. C., Jennings, A., Quan, H., & Forster, A. J. (2009). A modification of the Elixhauser comorbidity measures into a point system for hospital death using administrative data. Medical care, 626-633.
 #' @references Quan, H., Sundararajan, V., Halfon, P., Fong, A., Burnand, B., Luthi, J. C., ... & Ghali, W. A. (2005). Coding algorithms for defining comorbidities in ICD-9-CM and ICD-10 administrative data. Medical care, 1130-1139.
 #' @import dplyr
 #' @export
@@ -212,6 +213,8 @@ eci <- function(data, comorbidity) {
   ###PART D---WEIGHTED SUM---------------------------
   # Refer to:
   # Elixhauser, A., Steiner, C., Harris, D. R., & Coffey, R. M. (1998). Comorbidity measures for use with administrative data. Medical care, 36(1), 8-27.
+  # The weights refer to:
+  # van Walraven, C., Austin, P. C., Jennings, A., Quan, H., & Forster, A. J. (2009). A modification of the Elixhauser comorbidity measures into a point system for hospital death using administrative data. Medical care, 626-633.
 
   data$Elix_Index <- 7 * data$CHF_Elix + 5 * data$CA_Elix - 1 * data$VD_Elix + 4 * data$PCD_Elix + 2 * data$PVD_Elix + 0 * data$Hypertensionun_Elix + 0 * data$Hypertension_Elix + 7 * data$Paralysis_Elix + 6 * data$OND_Elix + 3 * data$CPD_Elix + 0 * data$DMun_Elix + 0 * data$DM_Elix + 0 * data$Hypothyroidism_Elix + 5 * data$Renal_Elix + 11 * data$LD_Elix + 0 * data$PUD_Elix + 0 * data$AIDS_Elix + 9 * data$Lymphoma_Elix + 12 * data$Metastatic_Elix + 4 * data$Solid_Elix + 0 * data$Rheumatoid_Elix + 3 * data$Coagulopathy_Elix - 4 * data$Obesity_Elix + 6 * data$Weight_Elix + 5 * data$Fluid_Elix - 2 * data$Blood_Elix - 2 * data$Deficiency_Elix + 0 * data$Alcohol_Elix - 7 * data$Drug_Elix + 0 * data$Psychoses_Elix - 3 * data$Depression_Elix
 
