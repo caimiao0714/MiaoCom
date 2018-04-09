@@ -1,7 +1,6 @@
 # MiaoCom
 
 [![Build status](https://ci.appveyor.com/api/projects/status/00t1917ftctbv0p7/branch/miao?svg=true)](https://ci.appveyor.com/project/caimiao0714/miaocom/branch/miao)
-
 [![Build Status](https://travis-ci.org/caimiao0714/MiaoCom.svg?branch=miao)](https://travis-ci.org/caimiao0714/MiaoCom)
 
 ## Overview
