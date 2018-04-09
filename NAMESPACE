@@ -3,4 +3,5 @@
 export(c3)
 export(cci)
 export(eci)
-import(dplyr)
+importFrom(dplyr,mutate_if)
+importFrom(magrittr,"%>%")

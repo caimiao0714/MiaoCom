@@ -9,7 +9,8 @@
 #' @param data Your data file in which Charlson Comorbidity index is to be calculated
 #' @param comorbidity A vector of all comorbidity variables
 #' @param age The name of the age variable
-#' @import dplyr
+#' @importFrom magrittr %>%
+#' @importFrom dplyr mutate_if
 #' @return data: a new data.frame named "data". This data frame contains two new variables: "cci_1987" & "cci_2011"
 #' @references Charlson, M. E., Pompei, P., Ales, K. L., & MacKenzie, C. R. (1987). A new method of classifying prognostic comorbidity in longitudinal studies: development and validation. Journal of chronic diseases, 40(5), 373-383.
 #' @references Quan, H., Sundararajan, V., Halfon, P., Fong, A., Burnand, B., Luthi, J. C., ... & Ghali, W. A. (2005). Coding algorithms for defining comorbidities in ICD-9-CM and ICD-10 administrative data. Medical care, 1130-1139.
@@ -18,9 +19,9 @@
 #' @export
 cci <- function(data, comorbidity, age) {
   ### PART A: SUBSETTING DATA---------------------------
-  suppressMessages(library(dplyr))
+
   data_comorbidity <- subset(data, select = comorbidity)# subset the whole dataset into "data_comorbidity": subset data that only contains comorbidities
-  data_comorbidity %>% mutate_if(is.factor, as.character) -> data_comorbidity # this converts factor values into characters
+  data_comorbidity %>% dplyr::mutate_if(is.factor, as.character) -> data_comorbidity # this converts factor values into characters
   data_comorbidity[is.na(data_comorbidity)] <- 0 #imputate missing values with zeros
   dim_comorbidity <- dim(data_comorbidity)# save the dimensionality of comorbidity subset data
   unlisted_data <- unlist(data_comorbidity)# unlist the comorbidity subset data(converts the data into a vector. Vectorization speeds up the functions)
@@ -141,13 +142,8 @@ cci <- function(data, comorbidity, age) {
   ###PART D---WEIGHTED SUM---------------------------
   #1:CCI_1987, by Mary E. Charlson in 1987
   # Reference: Charlson, M. E., Pompei, P., Ales, K. L., & MacKenzie, C. R. (1987). A new method of classifying prognostic comorbidity in longitudinal studies: development and validation. Journal of chronic diseases, 40(5), 373-383.
+  data$CCI_1987  <- data$MI + data$CCF + data$PVD + data$CD + data$Dementia + data$COPD + data$RD + data$PUD + data$MLD + data$DMnotEOD + data$DMandEOD * 2 + data$Hemiplegia * 2 + data$MSCKD * 2 + data$Malignancy * 2 + data$MSLD * 3 + data$MST * 6 + data$AIDS * 6 + data$age_group
 
-  data <- within(data, {
-    CCI_1987 <-
-      MI + CCF + PVD + CD + Dementia + COPD + RD + PUD + MLD + DMnotEOD + DMandEOD *
-      2 + Hemiplegia * 2 + MSCKD * 2 + Malignancy * 2 + MSLD * 3 + MST * 6 + AIDS *
-      6 + age_group
-  })
 
   #2:CCI_2011, weights were updated by Hude Quan et al.
   #Reference:

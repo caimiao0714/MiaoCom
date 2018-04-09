@@ -6,15 +6,16 @@
 #' @param data Your data file in which Elixhauser Comorbidity Index is to be calculated
 #' @param comorbidity A vector of all comorbidity variables
 #' @return data: a new data.frame named "data". This data frame contains a new variable "c3": the c3 Index was developed by Sarfati et al. in 2014. This is a comorbidity index targeted at cancer patients.
-#' @import dplyr
+#' @importFrom magrittr %>%
+#' @importFrom dplyr mutate_if
 #' @references Sarfati, D., et al., Cancer-specific administrative data-based comorbidity indices provided valid alternative to Charlson and National Cancer Institute Indices. J Clin Epidemiol, 2014. 67(5): p. 586-95
 #' @references Sarfati, D., Developing new comorbidity indices for cancer populations using administrative data. 2013, University of Otago: Dunedin. <Dr. Sarfati's doctoral dissertation>
 #' @export
 c3 <- function(data, comorbidity) {
   ### PART A: SUBSETTING DATA---------------------------
-  suppressMessages(library(dplyr))
+
   data_comorbidity <- subset(data, select = comorbidity)# subset the whole dataset into "data_comorbidity": subset data that only contains comorbidities
-  data_comorbidity %>% mutate_if(is.factor, as.character) -> data_comorbidity # this converts factor values into characters
+  data_comorbidity %>% dplyr::mutate_if(is.factor, as.character) -> data_comorbidity # this converts factor values into characters
   data_comorbidity[is.na(data_comorbidity)] <- 0 #imputate missing values with zeros
   dim_comorbidity <- dim(data_comorbidity)# save the dimensionality of comorbidity subset data
   unlisted_data <- unlist(data_comorbidity)# unlist the comorbidity subset data(converts the data into a vector. Vectorization speeds up the functions)

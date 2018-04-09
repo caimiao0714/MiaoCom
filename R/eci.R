@@ -9,14 +9,15 @@
 #' @references Elixhauser, A., Steiner, C., Harris, D. R., & Coffey, R. M. (1998). Comorbidity measures for use with administrative data. Medical care, 36(1), 8-27.
 #' @references van Walraven, C., Austin, P. C., Jennings, A., Quan, H., & Forster, A. J. (2009). A modification of the Elixhauser comorbidity measures into a point system for hospital death using administrative data. Medical care, 626-633.
 #' @references Quan, H., Sundararajan, V., Halfon, P., Fong, A., Burnand, B., Luthi, J. C., ... & Ghali, W. A. (2005). Coding algorithms for defining comorbidities in ICD-9-CM and ICD-10 administrative data. Medical care, 1130-1139.
-#' @import dplyr
+#' @importFrom magrittr %>%
+#' @importFrom dplyr mutate_if
 #' @export
 eci <- function(data, comorbidity) {
 
 ### PART A: SUBSETTING DATA---------------------------
 
   data_comorbidity <- subset(data, select = comorbidity)# subset the whole dataset into "data_comorbidity": subset data that only contains comorbidities
-  data_comorbidity %>% mutate_if(is.factor, as.character) -> data_comorbidity # this converts factor values into characters
+  data_comorbidity %>% dplyr::mutate_if(is.factor, as.character) -> data_comorbidity # this converts factor values into characters
   data_comorbidity[is.na(data_comorbidity)] <- 0 #imputate missing values with zeros
   dim_comorbidity <- dim(data_comorbidity)# save the dimensionality of comorbidity subset data
   unlisted_data <- unlist(data_comorbidity)# unlist the comorbidity subset data(converts the data into a vector. Vectorization speeds up the functions)
