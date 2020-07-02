@@ -18,7 +18,7 @@ eci <- function(data, comorbidity) {
 
   data_comorbidity <- subset(data, select = comorbidity)# subset the whole dataset into "data_comorbidity": subset data that only contains comorbidities
   data_comorbidity %>% dplyr::mutate_if(is.factor, as.character) -> data_comorbidity # this converts factor values into characters
-  data_comorbidity[is.na(data_comorbidity)] <- 0 #imputate missing values with zeros
+  data_comorbidity[is.na(data_comorbidity)] <- 'NA' #imputate missing values with zeros
   dim_comorbidity <- dim(data_comorbidity)# save the dimensionality of comorbidity subset data
   unlisted_data <- unlist(data_comorbidity)# unlist the comorbidity subset data(converts the data into a vector. Vectorization speeds up the functions)
   unlisted_data <- toupper(unlisted_data)
