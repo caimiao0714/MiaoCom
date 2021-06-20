@@ -1,6 +1,6 @@
 #' To calculate the c3 Comobidity Index (targeted at cancer patients)
 #'
-#' @author Miao Cai <email: miao.cai@slu.edu>
+#' @author Miao Cai <email: caim29@mail.sysu.edu.cn>
 #' @description This file aims to calculate the c3 Comobidity Index.
 #' @note This C3 index is used specifically for cancer patients.
 #' @param data Your data file in which Elixhauser Comorbidity Index is to be calculated
@@ -10,7 +10,7 @@
 #' @importFrom dplyr mutate_if
 #' @references Sarfati, D., et al., Cancer-specific administrative data-based comorbidity indices provided valid alternative to Charlson and National Cancer Institute Indices. J Clin Epidemiol, 2014. 67(5): p. 586-95
 #' @references Sarfati, D., Developing new comorbidity indices for cancer populations using administrative data. 2013, University of Otago: Dunedin. <Dr. Sarfati's doctoral dissertation>
-#' @export
+#' @export c3
 c3 <- function(data, comorbidity) {
   ### PART A: SUBSETTING DATA---------------------------
 

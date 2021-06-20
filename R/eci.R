@@ -1,6 +1,6 @@
 #' To calculate the Elixhauser Comorbidity Index
 #'
-#' @author Miao Cai <email: miao.cai@slu.edu>
+#' @author Miao Cai <email: caim29@mail.sysu.edu.cn>
 #' @description This file aims to calculate the Elixhauser Comorbidity Index.
 #' @note The Elixhauser Comorbidity Index does not include age as a component of the index.
 #' @param data Your data file in which Elixhauser Comorbidity Index is to be calculated
@@ -11,7 +11,7 @@
 #' @references Quan, H., Sundararajan, V., Halfon, P., Fong, A., Burnand, B., Luthi, J. C., ... & Ghali, W. A. (2005). Coding algorithms for defining comorbidities in ICD-9-CM and ICD-10 administrative data. Medical care, 1130-1139.
 #' @importFrom magrittr %>%
 #' @importFrom dplyr mutate_if
-#' @export
+#' @export eci
 eci <- function(data, comorbidity) {
 
 ### PART A: SUBSETTING DATA---------------------------
