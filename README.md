@@ -1,8 +1,5 @@
 # MiaoCom
 
-[![Build status](https://ci.appveyor.com/api/projects/status/00t1917ftctbv0p7/branch/miao?svg=true)](https://ci.appveyor.com/project/caimiao0714/miaocom/branch/miao)
-[![Build Status](https://travis-ci.org/caimiao0714/MiaoCom.svg?branch=miao)](https://travis-ci.org/caimiao0714/MiaoCom)
-
 ## Overview
 A R package for calculating comorbidity indexes (i.e. [Charlson Comorbidity Index](https://en.wikipedia.org/wiki/Comorbidity#Charlson_index), [Elixhauser Comorbidity Index](https://en.wikipedia.org/wiki/Comorbidity#Elixhauser_comorbidity_measure), and [C3 Index](https://www.ncbi.nlm.nih.gov/pubmed/24582212)) for epidemiologists.
 
