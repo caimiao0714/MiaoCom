@@ -1,6 +1,6 @@
 ---
 title: "Package 'MiaoCom'"
-author: "Miao Cai <miao.cai@slu.edu>"
+author: "Miao Cai <miao.cai@outlook.com>"
 date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
 vignette: >

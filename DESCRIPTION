@@ -1,9 +1,9 @@
 Package: MiaoCom
 Type: Package
 Title: An R package for calculating comorbidity indexes for epidemiologists
-Version: 0.2.3
-Authors@R: person("Miao", "Cai", email = "caim29@mail.sysu.edu.cn", role = c("aut", "cre"))
-Maintainer: Miao Cai <caim29@mail.sysu.edu.cn>
+Version: 0.3.0
+Authors@R: person("Miao", "Cai", email = "miao.cai@outlook.com", role = c("aut", "cre"))
+Maintainer: Miao Cai <miao.cai@outlook.com>
 Description: A R package for calculating comorbidity indexes using ICD-10 coded administrative health records (i.e. Charlson Comorbidity Index, Elixhauser Comorbidity Index, and C3 Index) for epidemiologists.
 License: MIT + file LICENSE
 Encoding: UTF-8
