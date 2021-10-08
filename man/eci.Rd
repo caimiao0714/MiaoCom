@@ -28,5 +28,5 @@ van Walraven, C., Austin, P. C., Jennings, A., Quan, H., & Forster, A. J. (2009)
 Quan, H., Sundararajan, V., Halfon, P., Fong, A., Burnand, B., Luthi, J. C., ... & Ghali, W. A. (2005). Coding algorithms for defining comorbidities in ICD-9-CM and ICD-10 administrative data. Medical care, 1130-1139.
 }
 \author{
-Miao Cai <email: miao.cai@slu.edu>
+Miao Cai <email: miao.cai@outlook.com>
 }

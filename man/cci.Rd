@@ -32,5 +32,5 @@ Quan, H., Sundararajan, V., Halfon, P., Fong, A., Burnand, B., Luthi, J. C., ...
 Quan, H., Li, B., Couris, C. M., Fushimi, K., Graham, P., Hider, P., ... & Sundararajan, V. (2011). Updating and validating the Charlson comorbidity index and score for risk adjustment in hospital discharge abstracts using data from 6 countries. American journal of epidemiology, 173(6), 676-682.
 }
 \author{
-Miao Cai <email: miao.cai@slu.edu>
+Miao Cai <email: miao.cai@outlook.com>
 }

@@ -26,5 +26,5 @@ Sarfati, D., et al., Cancer-specific administrative data-based comorbidity indic
 Sarfati, D., Developing new comorbidity indices for cancer populations using administrative data. 2013, University of Otago: Dunedin. <Dr. Sarfati's doctoral dissertation>
 }
 \author{
-Miao Cai <email: miao.cai@slu.edu>
+Miao Cai <email: miao.cai@outlook.com>
 }

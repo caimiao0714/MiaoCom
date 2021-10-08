@@ -8,7 +8,7 @@ Description: A R package for calculating comorbidity indexes using ICD-10 coded 
 License: MIT + file LICENSE
 Encoding: UTF-8
 LazyData: true
-RoxygenNote: 6.0.1
+RoxygenNote: 7.1.1
 Suggests: knitr,
     rmarkdown,
     testthat
